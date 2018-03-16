@@ -1,16 +1,37 @@
 body{
-  background-color: salmon
+background:gray;
 }
-table{
-  background: aquamarine
-  
-}
-#cookies{
-  border: 1px solid #111111;
-  
-}
-th{
-  letter-spacing: 0.1em;
+h1{
+  text-align: center;
 }
 
-  
+table.excel{
+  background: #fff;
+  font-size:18px;
+  margin:auto;
+  width:80%;
+}
+
+table.excel tr:first-child{
+  background: #ccc
+}
+table.excel tr:nth-child(odd){
+
+  background: #ddd;
+}
+table.excel tr:hover{
+  background:#000;
+  color:#fff;
+}
+table.excel td{
+  border:1px solid #ccc;
+  padding:.5rem 1.5rem;
+}
+img {
+  border-radius: 50%;
+  -webkit-transition: -webkit-transform .8s ease-in-out;
+          transition:         transform .8s ease-in-out;
+}
+img:hover {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);}

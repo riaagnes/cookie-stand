@@ -44,10 +44,11 @@ Locations.prototype.totCookie = function(){
   for(var i = 0; i<hours.length;i++){
     total=total+this.hourlyCookieSale[i];
   }
-  grantTotal.push(total);
+  for(var j =0;j<allLocations.length;j++){
+    grantTotal.push(total);
 
-  return total;
-
+    return total;
+  }
 };
 
 
@@ -59,7 +60,7 @@ Locations.prototype.addToTotalCookiePerHr=function(){
 //test code
 var grantTotals = function(){
   var total=0;
-  for(var i = 0; i<grantTotal.length;i++){
+  for(var i = 0; i<6; i++){
     total=total+grantTotal[i];
   }
   return total;
@@ -74,7 +75,7 @@ Locations.prototype.render = function(){
 
   // this.calculateHourlySale();
   //this.addToTotalCookiePerHr();
- 
+
   var trElement = document.createElement('tr');
   var tdElement = document.createElement('td');
   tdElement.textContent = this.location;

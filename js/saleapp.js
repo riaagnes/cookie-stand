@@ -1,11 +1,13 @@
 'use strict';
 var hours = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm'];
 
-//contains all the locations
+//contains all the locations.Everytime when the location is created using the constructor we append the new locatio into the alllocations
 var allLocations=[];
 
-var totalCookieSalePerHr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var grantTotal=[];
+//it cotains total cookiesale per hr for all locations for example.8am total cookie sale per hr will contain the sum of 8am sale at 1st and pike ,8am sale at seatac airport till 8 am sale at nth location.
+var totalCookieSalePerHr=[];
+//it contains sum of all hourlysales in each location.dailylocationtotal is calculated using calculatedailylocationtotal.it is populated when the render fn is called
+var dailyLocationTotal=[];
 
 
 
@@ -16,10 +18,11 @@ function Locations (location,minCustPerHr,maxCustPerHr,avgCookieSale){
   this.minCustPerHr = minCustPerHr;
   this.maxCustPerHr = maxCustPerHr;
   this.avgCookieSale = avgCookieSale;
+  //hourly sale for this location.for example this array will contain 6am sale for 1st and pike,7am sale for 1st and pike till 8 pm sales for 1st and pike.Inside the object of seatac airport,it will contain 6 am sale for seatac till 8 pm sale for the same.this list is calculated by calculatehourlysale fn using locations's other properties like mincustperhr,max....
   this.hourlyCookieSale = [];
   this.calculateHourlySale();
-  this.addToTotalCookiePerHr();
-  this.totCookie();
+  //this.addToTotalCookiePerHr();
+  // this.totCookie();
 
   allLocations.push(this);
 }
@@ -39,32 +42,47 @@ Locations.prototype.calculateHourlySale = function(){
   }
 
 };
-Locations.prototype.totCookie = function(){
+//adding daily location total of each location. By adding each elements of hourlycookiesale array.this is called from the render fn when each row is renderd.
+Locations.prototype.calculateDailyLocationTotal = function(){
   var total=0;
   for(var i = 0; i<hours.length;i++){
     total=total+this.hourlyCookieSale[i];
   }
-  for(var j =0;j<allLocations.length;j++){
-    grantTotal.push(total);
-
-    return total;
-  }
-};
-
-
-Locations.prototype.addToTotalCookiePerHr=function(){
-  for(var i =0;i<this.hourlyCookieSale.length;i++){
-    totalCookieSalePerHr[i]=totalCookieSalePerHr[i]+this.hourlyCookieSale[i];
-  }
-};
-//test code
-var grantTotals = function(){
-  var total=0;
-  for(var i = 0; i<6; i++){
-    total=total+grantTotal[i];
-  }
+  dailyLocationTotal.push(total);
   return total;
+};
 
+/*
+Locations.prototype.addToTotalCookiePerHr=function() {
+  for(var i =0;i<hours.length;i++){
+    if(totalCookieSalePerHr[i] === undefined){
+      totalCookieSalePerHr[i] =0;  
+    }
+    //get the hour total
+    totalCookieSalePerHr[i] =totalCookieSalePerHr[i] + this.hourlyCookieSale[i];
+  }
+};
+*/
+
+//sum all the daily location total to get the grand  total.this is called from the footer fn.
+var grantTotals = function(){
+  var grandTotal=0;
+  for(var i = 0; i<allLocations.length; i++){
+    grandTotal=grandTotal + dailyLocationTotal[i];
+  }
+  return grandTotal;
+
+};
+
+//this fn caculates the hourly total.by taking the sum of cookie sale for each hr in all location.
+var calculateHourlyTotal = function(){
+  for(var i=0;i<hours.length;i++){
+    var total =0;
+    for(var j =0;j<allLocations.length;j++){
+      total=total+allLocations[j].hourlyCookieSale[i];
+    }
+    totalCookieSalePerHr.push(total);
+  }
 };
 
 
@@ -73,8 +91,8 @@ var grantTotals = function(){
 
 Locations.prototype.render = function(){
 
-  // this.calculateHourlySale();
-  //this.addToTotalCookiePerHr();
+  //this.calculateHourlySale();
+  // this.addToTotalCookiePerHr();
 
   var trElement = document.createElement('tr');
   var tdElement = document.createElement('td');
@@ -88,10 +106,8 @@ Locations.prototype.render = function(){
   }
 
   tdElement=document.createElement('td');
-  tdElement.textContent=this.totCookie();
+  tdElement.textContent=this.calculateDailyLocationTotal();
   trElement.appendChild(tdElement);
-
-
   cookieStoreTable.appendChild(trElement);
 };
 
@@ -122,11 +138,13 @@ function makeHeaderRow(){
 }
 
 function makeFooterRow(){
+  calculateHourlyTotal();
   var footerTrElement = document.createElement('tr');
   var tdElement = document.createElement('td');
   tdElement.textContent = 'TOTAL';
   footerTrElement.appendChild(tdElement);
 
+  //
   for(var i=0;i<hours.length;i++){
     tdElement=document.createElement('td');
     tdElement.textContent = totalCookieSalePerHr[i] ;
@@ -136,11 +154,11 @@ function makeFooterRow(){
   tdElement=document.createElement('td');
   tdElement.textContent =grantTotals();
   footerTrElement.appendChild(tdElement);
-
-
   cookieStoreTable.appendChild(footerTrElement);
 
 }
+
+
 function renderAllLocation(){
   for(var i =0;i<allLocations.length;i++){
     allLocations[i].render();
@@ -160,7 +178,9 @@ function addNewLocation(event){
 
   cookieStoreTable.innerHTML ='';
   makeHeaderRow();
+  dailyLocationTotal=[];
   renderAllLocation();
+
   makeFooterRow();
 }
 

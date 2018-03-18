@@ -28,7 +28,10 @@ function Locations (location,minCustPerHr,maxCustPerHr,avgCookieSale){
 }
 
 Locations.prototype.custNumPerHr = function(){
-  return Math.floor(Math.random()*((this.maxCustPerHr - this.minCustPerHr)+1)+ this.minCustPerHr);
+  var temp2=(Math.random()*(this.maxCustPerHr - this.minCustPerHr));
+  var temp = temp2+ parseInt(this.minCustPerHr);
+  var custNumPerHr=Math.floor(temp);
+  return custNumPerHr;
 };
 
 Locations.prototype.avgCookiePerCus = function(){
